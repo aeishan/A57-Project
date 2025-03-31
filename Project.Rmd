@@ -1,0 +1,426 @@
+---
+title: "STAA57 Final Project"
+author:
+  - Eishan Ashraf 1010275499
+  - Kshitij Kapoor
+  - Daniel Venistan
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+fontsize: 10pt
+geometry: margin=0.7in
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(dplyr)
+library(knitr)
+library(stringr)
+```
+
+```{r,echo=FALSE}
+set2020 =  read.csv("en-2020-pssd-compendium.csv")
+head(set2020)
+```
+
+```{r,echo=FALSE}
+set2019 =  read.csv("en-2019-pssd-compendium (1).csv")
+head(set2019)
+```
+
+```{r,echo=FALSE}
+set2018 =  read.csv("en-2018-pssd-compendium.csv")
+head(set2018)
+```
+
+```{r,echo=FALSE}
+set2017 =  read.csv("en-2017-pssd-compendium.csv")
+head(set2017)
+```
+
+```{r,echo=FALSE}
+set2016 =  read.csv("en-2016-pssd-compendium.csv")
+head(set2017)
+```
+
+```{r,echo=FALSE}
+set2015 =  read.csv("en-2015-pssd-compendium-with-addendum (1).csv")
+head(set2015)
+```
+
+```{r,echo=FALSE}
+set2014 =  read.csv("en-2014-pssd-full-compendium.csv")
+head(set2014)
+```
+
+```{r,echo=FALSE}
+set2013 =  read.csv("en-2013-pssd.csv")
+head(set2013)
+```
+
+```{r,echo=FALSE}
+set2012 =  read.csv("en-2012-pssd.csv")
+head(set2012)
+```
+
+```{r,echo=FALSE}
+set2011 =  read.csv("en-2011-pssd.csv")
+head(set2011)
+```
+
+```{r,echo=FALSE}
+set2010 =  read.csv("en-2010-pssd.csv")
+head(set2010)
+```
+
+```{r,echo=FALSE}
+set2009 =  read.csv("en-2009-pssd.csv")
+head(set2009)
+```
+
+```{r,echo=FALSE}
+set2008 =  read.csv("en-2008-pssd.csv")
+head(set2008)
+```
+
+```{r,echo=FALSE}
+set2007 =  read.csv("en-2007-pssd.csv")
+head(set2007)
+```
+
+```{r,echo=FALSE}
+set2006 =  read.csv("en-2006-pssd.csv")
+head(set2006)
+```
+
+```{r,echo=FALSE}
+set2005 =  read.csv("en-2005-pssd.csv")
+head(set2005)
+```
+
+```{r,echo=FALSE}
+set2004 =  read.csv("en-2004-pssd.csv")
+head(set2004)
+```
+
+```{r,echo=FALSE}
+set2003 =  read.csv("en-2003-pssd.csv")
+head(set2003)
+```
+
+```{r,echo=FALSE}
+set2002 =  read.csv("en-2002-pssd.csv")
+head(set2002)
+```
+
+```{r,echo=FALSE}
+set2001 =  read.csv("2001.csv")
+head(set2001)
+```
+
+```{r,echo=FALSE}
+set2000 =  read.csv("en-2000-pssd.csv")
+head(set2000)
+```
+
+```{r,echo=FALSE}
+set1999 =  read.csv("1999.csv")
+head(set1999)
+```
+
+```{r,echo=FALSE}
+set1998 =  read.csv("en-1998-pssd.csv")
+head(set1998)
+```
+
+# Introduction
+
+This is the beginning of our project report. We explore data from **Ontario's Public Sector Salary Disclosure (PSSD)**, commonly referred to as the “Sunshine List,” from **1996 to 2020**.
+
+The Sunshine List is published annually by the Government of Ontario to disclose the names, positions, and salaries of certain public sector employees earning above a specific threshold (historically \$100,000). Our goal is to investigate trends, compare salary distributions, and gain insights into how different public sector roles and organizations have evolved over time.
+
+Myabe keep whats below
+
+Through this analysis, we aim to: - Understand which job titles or sectors consistently appear at higher salary levels. - Observe year-to-year changes in average or median salaries. - Investigate how benefits compare across different roles and sectors.
+
+Ultimately, our findings may help inform discussions about **public sector compensation**, **transparency**, and **policy** decisions in Ontario.
+
+------------------------------------------------------------------------
+
+# Description of the Dataset
+
+We have annual CSV files from **1996** through **2020**, each containing salary disclosures for Ontario public sector employees. After cleaning, each dataset includes these key columns:
+
+```{r}
+names(set2020)
+```
+
+```{r}
+names(set2019)
+```
+
+1.  **Sector**: The broad classification of the public sector organization (e.g., Government, Hospitals, etc.).
+2.  **Last.Name**: The employee’s last name.
+3.  **First.Name**: The employee’s first name.
+4.  **Salary.Paid**: The total salary paid to the employee in that calendar year.
+5.  **Taxable.Benefits/Benifits**: The taxable benefits received by the employee.
+6.  **Employer**: The name of the employer or organization.
+7.  **Job.Title**: The employee’s official position or title.
+8.  **Calendar.Year/Year**: The year for which the data applies (e.g., 1996, 1997, …, 2020).
+
+**Note**: Some CSVs have slightly different column names or formats (like `$` signs or commas in the salary fields). We will clean these to ensure consistency across all years. \pagebreak
+
+------------------------------------------------------------------------
+
+# Background of the Data
+
+The dataset, spanning from **1996 to 2020**, offers a comprehensive view of public sector compensation in Ontario. Under the Public Sector Salary Disclosure Act, public sector organizations are required to disclose the salaries and taxable benefits of employees earning \$100,000 or more. These datasets include detailed information such as salary figures, taxable benefits, job positions, and employer names.
+
+By compiling data over this extensive period, the dataset serves as a valuable resource for understanding long-term trends in public sector pay. Researchers can explore how wage structures have evolved, assess shifts in employment patterns, and examine the broader economic and policy impacts over time. This historical archive not only documents changes in compensation but also provides critical insights into the dynamics of public sector employment in Ontario.
+
+------------------------------------------------------------------------
+
+#What is the overall Research Question
+
+Below are some research questions for our analysis:
+
+1.  **Do colleges pay, on average, more than universities?**\
+    We aim to test whether there is a statistically significant difference in average salaries between colleges and universities over the years. A two-sample t-test will be employed, examining whether the confidence interval for the difference in means excludes zero.
+
+2.  **Has the average public sector salary increased significantly over time from 1996 to 2020?**\
+    his question investigates whether there is an upward trend in public secTtor salaries over the years. A simple linear regression model will be used, with the p-value for the year coefficient and its confidence interval indicating the significance of the trend.
+
+3.  **Do differences in salary across sectors (e.g., colleges vs. universities) persist even after controlling for year-to-year variations?**\
+    This analysis will explore if sector-related differences in salaries remain statistically significant when adjusting for changes over time using multiple regression analysis.
+
+4.  **Is there a significant relationship between salary and taxable benefits among public sector employees?**\
+    We will assess whether a higher salary is associated with higher taxable benefits by modeling their relationship with regression analysis. A significant regression coefficient (with a confidence interval not including zero) would suggest a meaningful association.
+
+-   On averege from 1996 to 2020 which sector has the largest average salary?
+-   
+-   Which sectors had the highest averge salary for each year?
+-   
+
+Table and Charts
+
+For some tables
+
+-Table for each year the sector with largest averge income
+
+-Myabe some tables for each year the
+
+-   
+
+Loading
+
+```{r}
+
+```
+
+#Merging all our Data sets from 1996 to 2020
+
+The column names we will use are
+
+Sector , Last.Name , First.Name, Salary.Paid, Benifits, Employer, Job.Title, Calendar.Year
+
+```{r,echo=FALSE}
+set1997 =  read.csv("en-1997-pssd.csv")
+head(set1997)
+```
+
+```{r,echo=FALSE}
+set1996 =  read.csv("en-1996-pssd.csv")
+head(set1996)
+```
+
+# Filter all irrelevant columns
+
+```{r, echo=FALSE}
+
+filter_data <- function(dataset) {
+  if (is.character(dataset$Salary.Paid)) {
+    dataset$Salary.Paid <- as.numeric(gsub("[$,]", "", dataset$Salary.Paid)) # removes commas and $ from string
+  }
+
+  if (is.character(dataset$Taxable.Benefits)) {
+    dataset$Taxable.Benefits <- as.numeric(gsub("[$,]", "", dataset$Taxable.Benefits))
+  }
+
+  dataset$Sector <- tolower(dataset$Sector)
+  dataset$Sector <- gsub("[&]", "and", dataset$Sector)
+  dataset$Sector <- gsub("[:]", "-", dataset$Sector)
+  dataset$Sector <- gsub(" - universités", "", dataset$Sector)
+  dataset$Sector <- gsub("[*]", "", dataset$Sector)
+
+
+  return(dataset %>% select(Sector, Last.Name, First.Name, Salary.Paid, Taxable.Benefits, Employer, Job.Title, Calendar.Year))
+}
+```
+
+```{r}
+set2020 = set2020 %>% rename(Last.Name = Last.name, First.Name = First.name, Salary.Paid = Salary, Taxable.Benefits = Benefits, Job.Title = Job.title, Calendar.Year = Year)
+set2020$Calendar.Year = 2020
+set2020 = filter_data(set2020)
+```
+
+```{r}
+glimpse(set2020)
+```
+
+```{r}
+set2019 = filter_data(set2019)
+glimpse(set2019)
+```
+
+```{r}
+set2018 = filter_data(set2018)
+glimpse(set2018)
+```
+
+```{r}
+set2017$Calendar.Year = 2017
+set2017 = filter_data(set2017)
+#set2017$Calendar.Year = as.double(set2017$Calendar.Year)
+glimpse(set2017)
+```
+
+```{r}
+
+set2016$Calendar.Year = 2016
+set2016 = filter_data(set2016)
+glimpse(set2016)
+```
+
+```{r}
+set2015$Calendar.Year = 2015
+set2015 = filter_data(set2015)
+glimpse(set2015)
+```
+
+```{r}
+set2014 = set2014 %>% rename(Last.Name = Last.name, Job.Title = Job.title, Calendar.Year = Calendar.year) 
+set2014$Calendar.Year = 2014
+set2014 = filter_data(set2014)
+glimpse(set2014)
+```
+
+```{r}
+set2013$Calendar.Year = 2013
+set2013 = filter_data(set2013)
+glimpse(set2013)
+```
+
+```{r}
+set2012$Calendar.Year = 2012
+set2012 = filter_data(set2012)
+glimpse(set2012)
+```
+
+```{r}
+set2011$Calendar.Year = 2011
+set2011 = filter_data(set2011)
+glimpse(set2011)
+```
+
+```{r}
+set2010$Calendar.Year = 2010
+set2010 = filter_data(set2010)
+glimpse(set2010)
+```
+
+```{r}
+
+set2009$Calendar.Year = 2009
+set2009 = filter_data(set2009)
+glimpse(set2009)
+```
+
+```{r}
+set2008$Calendar.Year = 2008
+set2008 = filter_data(set2008)
+glimpse(set2008)
+
+```
+
+```{r}
+set2007$Calendar.Year = 2007
+set2007 = filter_data(set2007)
+glimpse(set2007)
+```
+
+```{r}
+set2006$Calendar.Year = 2006
+set2006 = filter_data(set2006)
+glimpse(set2006)
+```
+
+```{r}
+set2005$Calendar.Year = 2005
+set2005 = filter_data(set2005)
+glimpse(set2005)
+```
+
+```{r}
+set2004$Calendar.Year = 2004
+set2004 = filter_data(set2004)
+glimpse(set2004)
+```
+
+```{r}
+set2003$Calendar.Year = 2003
+set2003 = filter_data(set2003)
+glimpse(set2003)
+```
+
+```{r}
+set2002$Calendar.Year = 2002
+set2002 = filter_data(set2002)
+glimpse(set2002)
+```
+
+```{r}
+set2001$Calendar.Year = 2001
+set2001 = set2001 %>% rename(Last.Name = Surname, Job.Title = Position)
+set2001 = filter_data(set2001)
+glimpse(set2001)
+```
+
+```{r}
+set2000$Calendar.Year = 2000
+set2000 = filter_data(set2000)
+glimpse(set2000)
+```
+
+```{r}
+set1999$Calendar.Year = 1999
+set1999 = filter_data(set1999)
+set1999 = set1999 %>%
+  mutate(Calendar.Year = as.double(Calendar.Year))
+glimpse(set1999)
+```
+
+```{r}
+set1998$Calendar.Year = 1998
+set1998 = filter_data(set1998)
+glimpse(set1998)
+```
+
+```{r}
+set1997$Calendar.Year = 1997
+set1997 = filter_data(set1997)
+glimpse(set1997)
+```
+
+```{r}
+set1996$Calendar.Year = 1996
+set1996 = filter_data(set1996)
+glimpse(set1996)
+```
+
+```{r}
+dataSet = bind_rows(set2020, set2019, set2018, set2017, set2016, set2015, set2014, set2013, set2012, set2011, set2010, set2009, set2008, set2007, set2006, set2005, set2004, set2003, set2002, set2001, set2000, set1999, set1998, set1997, set1996)
+dataSet %>% group_by(Sector, Calendar.Year) %>% summarize(Avg.Salary = mean(Salary.Paid, na.rm = TRUE), Avg.Tax.Benefits = mean(Taxable.Benefits, na.rm = TRUE))
+```
