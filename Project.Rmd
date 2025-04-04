@@ -1,426 +1,876 @@
 ---
 title: "STAA57 Final Project"
 author:
-  - Eishan Ashraf 1010275499
+  - Eishan Ashraf 
+    - 1010275499
   - Kshitij Kapoor
-  - Daniel Venistan
+    - 1010297581
+  - Daniel Venistan 
+    - 1010100506
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: 
   pdf_document:
     toc: true
     number_sections: true
-fontsize: 10pt
-geometry: margin=0.7in
+fontsize: 6pt
+geometry: margin=0.5in
 ---
 
-```{r}
+```{r,echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(tidyverse)
 library(dplyr)
-library(dplyr)
 library(knitr)
-library(stringr)
+library(ggplot2)
+library(gridExtra)
 ```
+# Introduction
+
+This is the beginning of our project report. We explore data from Ontario's Public Sector Salary Disclosure, commonly referred to as the “Sunshine List,” from 1996 to 2020.
+
+The Sunshine List is published annually by the Government of Ontario to disclose the names, positions, and salaries of certain public sector employees earning above a specific threshold, historically \$100,000. Our goal is to investigate trends, compare salary distributions, and gain insights into how different public sector roles and organizations have evolved over time.
+
+# Merging and Cleaning Public Sector Salary Data (1996–2020)
+
+To prepare our dataset for analysis, we gathered and merged Ontario’s Public Sector Salary Disclosure data from multiple annual CSV files from the years **1996 to 2020**. These datasets changed slightly in structure across years, so we first ensured that all key fields—such as salary paid, taxable benefits, job title, and employer names were standardized and consistently named. Next, we cleaned the salary and benefits data by removing formatting symbols like dollar signs and commas and converting the entries into numerical values. We also refined the sector labels by correcting for inconsistencies such as extra characters, French-language suffixes, and formatting differences to ensure uniform naming conventions across years.
+
+Only the relevant columns were retained: Sector, Last Name, First Name, Salary Paid, Taxable Benefits, Employer, Job Title, and Calendar Year. Each year’s data was labeled appropriately and combined into one large dataset. 
 
 ```{r,echo=FALSE}
 set2020 =  read.csv("en-2020-pssd-compendium.csv")
-head(set2020)
-```
 
-```{r,echo=FALSE}
 set2019 =  read.csv("en-2019-pssd-compendium (1).csv")
-head(set2019)
-```
 
-```{r,echo=FALSE}
 set2018 =  read.csv("en-2018-pssd-compendium.csv")
-head(set2018)
-```
 
-```{r,echo=FALSE}
 set2017 =  read.csv("en-2017-pssd-compendium.csv")
-head(set2017)
-```
 
-```{r,echo=FALSE}
 set2016 =  read.csv("en-2016-pssd-compendium.csv")
-head(set2017)
-```
 
-```{r,echo=FALSE}
 set2015 =  read.csv("en-2015-pssd-compendium-with-addendum (1).csv")
-head(set2015)
-```
 
-```{r,echo=FALSE}
 set2014 =  read.csv("en-2014-pssd-full-compendium.csv")
-head(set2014)
-```
 
-```{r,echo=FALSE}
 set2013 =  read.csv("en-2013-pssd.csv")
-head(set2013)
-```
 
-```{r,echo=FALSE}
 set2012 =  read.csv("en-2012-pssd.csv")
-head(set2012)
-```
 
-```{r,echo=FALSE}
 set2011 =  read.csv("en-2011-pssd.csv")
-head(set2011)
-```
 
-```{r,echo=FALSE}
 set2010 =  read.csv("en-2010-pssd.csv")
-head(set2010)
-```
 
-```{r,echo=FALSE}
 set2009 =  read.csv("en-2009-pssd.csv")
-head(set2009)
-```
 
-```{r,echo=FALSE}
 set2008 =  read.csv("en-2008-pssd.csv")
-head(set2008)
-```
 
-```{r,echo=FALSE}
 set2007 =  read.csv("en-2007-pssd.csv")
-head(set2007)
-```
 
-```{r,echo=FALSE}
 set2006 =  read.csv("en-2006-pssd.csv")
-head(set2006)
-```
 
-```{r,echo=FALSE}
 set2005 =  read.csv("en-2005-pssd.csv")
-head(set2005)
-```
 
-```{r,echo=FALSE}
 set2004 =  read.csv("en-2004-pssd.csv")
-head(set2004)
-```
 
-```{r,echo=FALSE}
 set2003 =  read.csv("en-2003-pssd.csv")
-head(set2003)
-```
 
-```{r,echo=FALSE}
 set2002 =  read.csv("en-2002-pssd.csv")
-head(set2002)
-```
 
-```{r,echo=FALSE}
 set2001 =  read.csv("2001.csv")
-head(set2001)
-```
 
-```{r,echo=FALSE}
 set2000 =  read.csv("en-2000-pssd.csv")
-head(set2000)
-```
 
-```{r,echo=FALSE}
 set1999 =  read.csv("1999.csv")
-head(set1999)
-```
 
-```{r,echo=FALSE}
 set1998 =  read.csv("en-1998-pssd.csv")
-head(set1998)
-```
 
-# Introduction
-
-This is the beginning of our project report. We explore data from **Ontario's Public Sector Salary Disclosure (PSSD)**, commonly referred to as the “Sunshine List,” from **1996 to 2020**.
-
-The Sunshine List is published annually by the Government of Ontario to disclose the names, positions, and salaries of certain public sector employees earning above a specific threshold (historically \$100,000). Our goal is to investigate trends, compare salary distributions, and gain insights into how different public sector roles and organizations have evolved over time.
-
-Myabe keep whats below
-
-Through this analysis, we aim to: - Understand which job titles or sectors consistently appear at higher salary levels. - Observe year-to-year changes in average or median salaries. - Investigate how benefits compare across different roles and sectors.
-
-Ultimately, our findings may help inform discussions about **public sector compensation**, **transparency**, and **policy** decisions in Ontario.
-
-------------------------------------------------------------------------
-
-# Description of the Dataset
-
-We have annual CSV files from **1996** through **2020**, each containing salary disclosures for Ontario public sector employees. After cleaning, each dataset includes these key columns:
-
-```{r}
-names(set2020)
-```
-
-```{r}
-names(set2019)
-```
-
-1.  **Sector**: The broad classification of the public sector organization (e.g., Government, Hospitals, etc.).
-2.  **Last.Name**: The employee’s last name.
-3.  **First.Name**: The employee’s first name.
-4.  **Salary.Paid**: The total salary paid to the employee in that calendar year.
-5.  **Taxable.Benefits/Benifits**: The taxable benefits received by the employee.
-6.  **Employer**: The name of the employer or organization.
-7.  **Job.Title**: The employee’s official position or title.
-8.  **Calendar.Year/Year**: The year for which the data applies (e.g., 1996, 1997, …, 2020).
-
-**Note**: Some CSVs have slightly different column names or formats (like `$` signs or commas in the salary fields). We will clean these to ensure consistency across all years. \pagebreak
-
-------------------------------------------------------------------------
-
-# Background of the Data
-
-The dataset, spanning from **1996 to 2020**, offers a comprehensive view of public sector compensation in Ontario. Under the Public Sector Salary Disclosure Act, public sector organizations are required to disclose the salaries and taxable benefits of employees earning \$100,000 or more. These datasets include detailed information such as salary figures, taxable benefits, job positions, and employer names.
-
-By compiling data over this extensive period, the dataset serves as a valuable resource for understanding long-term trends in public sector pay. Researchers can explore how wage structures have evolved, assess shifts in employment patterns, and examine the broader economic and policy impacts over time. This historical archive not only documents changes in compensation but also provides critical insights into the dynamics of public sector employment in Ontario.
-
-------------------------------------------------------------------------
-
-#What is the overall Research Question
-
-Below are some research questions for our analysis:
-
-1.  **Do colleges pay, on average, more than universities?**\
-    We aim to test whether there is a statistically significant difference in average salaries between colleges and universities over the years. A two-sample t-test will be employed, examining whether the confidence interval for the difference in means excludes zero.
-
-2.  **Has the average public sector salary increased significantly over time from 1996 to 2020?**\
-    his question investigates whether there is an upward trend in public secTtor salaries over the years. A simple linear regression model will be used, with the p-value for the year coefficient and its confidence interval indicating the significance of the trend.
-
-3.  **Do differences in salary across sectors (e.g., colleges vs. universities) persist even after controlling for year-to-year variations?**\
-    This analysis will explore if sector-related differences in salaries remain statistically significant when adjusting for changes over time using multiple regression analysis.
-
-4.  **Is there a significant relationship between salary and taxable benefits among public sector employees?**\
-    We will assess whether a higher salary is associated with higher taxable benefits by modeling their relationship with regression analysis. A significant regression coefficient (with a confidence interval not including zero) would suggest a meaningful association.
-
--   On averege from 1996 to 2020 which sector has the largest average salary?
--   
--   Which sectors had the highest averge salary for each year?
--   
-
-Table and Charts
-
-For some tables
-
--Table for each year the sector with largest averge income
-
--Myabe some tables for each year the
-
--   
-
-Loading
-
-```{r}
-
-```
-
-#Merging all our Data sets from 1996 to 2020
-
-The column names we will use are
-
-Sector , Last.Name , First.Name, Salary.Paid, Benifits, Employer, Job.Title, Calendar.Year
-
-```{r,echo=FALSE}
 set1997 =  read.csv("en-1997-pssd.csv")
-head(set1997)
-```
 
-```{r,echo=FALSE}
 set1996 =  read.csv("en-1996-pssd.csv")
-head(set1996)
-```
-
-# Filter all irrelevant columns
-
-```{r, echo=FALSE}
 
 filter_data <- function(dataset) {
   if (is.character(dataset$Salary.Paid)) {
-    dataset$Salary.Paid <- as.numeric(gsub("[$,]", "", dataset$Salary.Paid)) # removes commas and $ from string
+    # removes commas and $ from string
+    dataset$Salary.Paid <- as.numeric(gsub("[$,]", "", dataset$Salary.Paid))
   }
 
   if (is.character(dataset$Taxable.Benefits)) {
     dataset$Taxable.Benefits <- as.numeric(gsub("[$,]", "", dataset$Taxable.Benefits))
   }
 
-  dataset$Sector <- tolower(dataset$Sector)
+  dataset$Sector <- tolower(dataset$Sector) # to ensure for consistent Sector 
+                                             # names
+  
+  # replace all instances of one substring with the other
+  # to ensure consistent grouping later on
   dataset$Sector <- gsub("[&]", "and", dataset$Sector)
   dataset$Sector <- gsub("[:]", "-", dataset$Sector)
   dataset$Sector <- gsub(" - universités", "", dataset$Sector)
   dataset$Sector <- gsub("[*]", "", dataset$Sector)
+  dataset$Sector <- gsub("[\u2010-\u2015]", "-", dataset$Sector) # standardize 
+                                                          # all dashes
+  dataset$Sector <- enc2utf8(dataset$Sector) # use UTF-8 Formatting
+  dataset$Sector <- str_trim(dataset$Sector) # remove trailing and leading 
+                                              # white space
 
-
-  return(dataset %>% select(Sector, Last.Name, First.Name, Salary.Paid, Taxable.Benefits, Employer, Job.Title, Calendar.Year))
+  return(dataset %>% select(Sector, Last.Name, First.Name, Salary.Paid, 
+                            Taxable.Benefits, Employer, Job.Title,
+                            Calendar.Year))
 }
 ```
 
-```{r}
-set2020 = set2020 %>% rename(Last.Name = Last.name, First.Name = First.name, Salary.Paid = Salary, Taxable.Benefits = Benefits, Job.Title = Job.title, Calendar.Year = Year)
-set2020$Calendar.Year = 2020
-set2020 = filter_data(set2020)
+
+```{r,echo=FALSE}
+#Fixing Columns names so they are consistent throughout all data sets from year 1996 to 2020
+set2020 <- set2020 %>% rename(
+  Last.Name       = Last.name,
+  First.Name      = First.name,
+  Salary.Paid     = Salary,
+  Taxable.Benefits = Benefits,
+  Job.Title       = Job.title,
+  Calendar.Year   = Year
+)
+
+set2014 <- set2014 %>% rename(
+  Last.Name     = Last.name,
+  Job.Title     = Job.title,
+  Calendar.Year = Calendar.year
+)
+
+set2001 <- set2001 %>% rename(
+  Last.Name = Surname,
+  Job.Title = Position
+)
+
+# 1999.csv - ensure Calendar.Year is numeric
+set1999$Calendar.Year <- as.double(set1999$Calendar.Year)
+
+#Placing all datasets into a named list with year as the name
+
+data_list <- list(
+  "2020" = set2020,"2019" = set2019,"2018" = set2018, "2017" = set2017,
+  "2016" = set2016,"2015" = set2015,"2014" = set2014,"2013" = set2013,
+  "2012" = set2012,"2011" = set2011,"2010" = set2010,
+  "2009" = set2009,"2008" = set2008,"2007" = set2007,"2006" = set2006,
+  "2005" = set2005, "2004" = set2004, "2003" = set2003, "2002" = set2002,
+  "2001" = set2001,"2000" = set2000,"1999" = set1999,"1998" = set1998,
+  "1997" = set1997,"1996" = set1996
+)
+
+#Iterate each years data set and clean it 
+for (year_str in names(data_list)) {
+  # Convert list name to numeric year (e.g. "2019" -> 2019)
+  numeric_year <- as.numeric(year_str)
+  
+  # Extract the data frame
+  df <- data_list[[year_str]]
+  
+  # Assign correct Calendar.Year as some are missing
+  df$Calendar.Year <- numeric_year
+  
+  # filter_data() function to df
+  df <- filter_data(df)
+  
+  # Store cleaned and filtered df back into list
+  data_list[[year_str]] <- df
+}
+
+# Directly bind everything in the list
+master_set <- bind_rows(data_list)
+# master_set now contains all rows from 1996 to 2020
 ```
 
-```{r}
-glimpse(set2020)
+# Description of the Dataset
+
+We have annual CSV files from **1996** through **2020**, each containing salary disclosures for Ontario public sector employees. After cleaning, each dataset includes these key columns:
+
+```{r,echo=FALSE}
+names(set2020)
+```
+1.  Sector: The broad classification of the public sector organization (e.g., Government, Hospitals, etc.).
+2.  Last.Name: The employee’s last name.
+3.  First.Name: The employee’s first name.
+4.  Salary.Paid: The total salary paid to the employee in that calendar year.
+5.  Taxable.Benefits/Benifits: The taxable benefits received by the employee.
+6.  Employer: The name of the employer or organization.
+7.  Job.Title: The employee’s official position or title.
+8.  Calendar.Year/Year: The year for which the data applies (e.g., 1996, 1997, …, 2020).
+
+# Background of the Data
+
+This dataset, covering the years 1996 to 2020, was collected under the Public Sector Salary Disclosure Act, which requires the public release of compensation details for employees earning $100,000 or more. The data is published annually by the Government of Ontario and includes comprehensive information on \textbf{each employee’s salary, taxable benefits, job title, employer, and sector}.
+
+Through this long-term record, researchers, policymakers, journalists, and the public can explore trends in public sector compensation, transparency, and workforce dynamics. By spanning multiple decades, the dataset provides insights into how salaries, benefits, and job roles have evolved over time in Ontario’s public sector. 
+
+Ultimately, this dataset offers a valuable resource for understanding long-term compensation trends, informing policy decisions, and enhancing transparency in government spending. It can be used to investigate salary changes or assess the competitiveness of public sector roles.
+
+# What is the overall Research Question
+
+As researchers, our overarching goal is to explore the patterns and trends in public sector compensation in Ontario from **1996 to 2020**. We aim to analyze various factors, including salary, taxable benefits, sector, and year, to gain insights into how salary distributions have evolved across different public sector organizations. By examining these data, we hope to identify meaningful patterns, compare compensation, and potentially forecast future salary trends. Specifically, our research questions include:
+
+1. **What are the top-paying sectors by year?**  
+2. **Do colleges and universities pay similar average salaries, or is there a notable difference?**  
+3. **How have salary trends changed by sector over the years?**  
+4. **What are the average salary and taxable benefits for each year from 1996 to 2020?**  
+5. **Can we predict the average salary for upcoming years based on historical data?**
+
+By addressing these questions, we aim to provide a clearer understanding of how public sector compensation has changed over time and what factors may influence these patterns.
+
+# Tables and Graphs
+
+## Average Salary and Taxable Benefits by Year (1996-2020)
+
+```{r,echo=FALSE}
+# Group by Calendar.Year and compute the averages
+avg_table = master_set %>%
+  group_by(Calendar.Year) %>%
+  summarize(
+    Avg_Salary = mean(Salary.Paid, na.rm = TRUE),
+    Avg_Tax_Benefits = mean(Taxable.Benefits, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(Calendar.Year)
 ```
 
-```{r}
-set2019 = filter_data(set2019)
-glimpse(set2019)
+```{r,echo=FALSE}
+# Create Average Salary plot
+plot1 <- ggplot(avg_table, aes(x = Calendar.Year, y = Avg_Salary)) +
+  geom_line(color = "blue", linewidth = 1.2) + 
+  geom_point(color = "blue", size = 2) +
+  labs(
+    title = "Trend in Average Salary (1996-2020)",
+    x = "Year",
+    y = "Average Salary ($)"
+  ) +
+  theme_minimal()
+
+# Create the Average Taxable Benefits plot
+plot2 <- ggplot(avg_table, aes(x = Calendar.Year, y = Avg_Tax_Benefits)) +
+  geom_line(color = "red", linewidth = 1.2) + 
+  geom_point(color = "red", size = 2) +
+  labs(
+    title = "Trend in Average Taxable Benefits (1996-2020)",
+    x = "Year",
+    y = "Average Taxable Benefits ($)"
+  ) +
+  theme_minimal()
+
+# Arrange the two plots side by side
+grid.arrange(plot1, plot2, ncol = 2)
 ```
 
-```{r}
-set2018 = filter_data(set2018)
-glimpse(set2018)
+
+The first graph, "Trend in Average Salary (1996-2020)", displays how the average salary of public sector employees on the Sunshine List has evolved over time. In this plot, the x-axis represents the calendar year while the y-axis shows the average salary in dollars. Notably, despite some minor annual fluctuations, \textbf{the average salary has remained consistent, generally ranging between \$120,000 and \$130,000}. For instance, the average salary was approximately \$121,495 in 1996 and increased slightly to around \$125,870 in 2020. This consistency suggests that, \textbf{even in the face of inflation, economic downturns (such as the 2008 recession), and shifts in government policies, the base salaries for high-earning public sector employees have essentially remained unchanged}.
+
+In contrast, the second graph, "Trend in Average Taxable Benefits (1996-2020)", illustrates a \textbf{clear downward trend in the average taxable benefits over the same period}. Here, the x-axis again represents the year, and the y-axis represents the average taxable benefits in dollars. While the average taxable benefits were around $2,000 in 1996, they declined steadily to approximately \$735 by 2020. This reduction implies that although base salaries have been generally the same and stable, the additional monetary perks provided as taxable benefits have decreased over time.
+
+Overall, these findings highlight a significant change in the total compensation for high-earning public sector employees. While the \textbf{base salaries have been stable, there is a notable reduction in taxable benefits} suggesting that the \textbf{overall total compensation} when combining salary and taxable benefits has \textbf{decreased over time}. One potential explanation for this trend is that public sector organizations may be actively trying to decrease costs by reducing supplementary benefits.
+
+
+
+## Sectors with the Largest Average Salary by Year
+```{r,echo=FALSE}
+master_set2 = master_set %>% group_by(Sector, Calendar.Year) %>% summarize(Avg.Salary = mean(Salary.Paid, na.rm = TRUE)) %>%
+  group_by(Calendar.Year) %>% filter(Avg.Salary == max(Avg.Salary, na.rm = TRUE)) %>% arrange(Calendar.Year)
+
+
+kable(master_set2, 
+      caption = "Sector with the Largest Average Salary by Year (1996-2020)", 
+      booktabs = TRUE, 
+      digits = 2)
 ```
 
-```{r}
-set2017$Calendar.Year = 2017
-set2017 = filter_data(set2017)
-#set2017$Calendar.Year = as.double(set2017$Calendar.Year)
-glimpse(set2017)
+The table titled "Sector with the Largest Average Salary by Year (1996–2020)" provides a clear summary of which public sector categories offered the highest average annual salaries in Ontario from 1996 through 2020. The column "Sector" identifies the specific public sector category or department, such as Hospitals, the Judiciary, or specialized Seconded positions within government ministries. The "Calendar Year" column indicates the respective year in which the average salaries were recorded, while the "Avg. Salary" column lists the corresponding highest average salaries in Canadian dollars. However, the sector with the highest average salary changed over time. Initially, between 1996 and 2002, hospitals consistently had the highes average salary. Beginning in 2003, however, the Judiciary sector became prominent. Between 2009 and 2015, certain specialized "Seconded" positions—temporary roles transferred to key ministries, mostly Health & Long-Term Care—displayed exceptionally high average salaries, peaking at approximately $346,041 in 2012. Post 2015, the Judiciary sector regained its position as the top-paying sector, consistently maintaining high salary averages through 2020.
+
+
+
+
+## Salary trends by sector over the years
+```{r, echo=FALSE}
+# bind all smaller datasets into one larger one
+per_sector_set = master_set
+
+# rename sectors to ensure correct grouping
+per_sector_set$Sector <- per_sector_set$Sector %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  str_replace("^government of ontario.*", "government of ontario") %>%
+  str_replace("^ministry.*", "ministry") %>%
+  str_replace("^municipalities.*", "municipalities") %>%
+  str_replace("^seconded.*", "seconded") %>%
+  str_replace("^hospitals.*", "hospitals") %>%
+  str_replace("hydro one and ontario power generation", "ontario power generation") %>%
+  str_replace("other public sector employers", "other public sector")
+
+# group by Sector and Calendar.Year and take average of Salary.Paid
+per_sector_set <- per_sector_set %>%
+  group_by(Sector, Calendar.Year) %>%
+  summarise(Avg_Salary = mean(Salary.Paid, na.rm = TRUE))
+
+# plot graph
+ggplot(per_sector_set, aes(x = Calendar.Year, y = Avg_Salary, color = Sector)) +
+  geom_line(size = 0.8, alpha = 0.9) +
+  xlab("Year") + ylab("Average Salary ($)") + 
+  ggtitle("Average Salary Trend by Sector (1996-2020)") + labs(
+    color = "Sector"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom") + 
+  guides(color = guide_legend(ncol = 3))
 ```
 
-```{r}
 
-set2016$Calendar.Year = 2016
-set2016 = filter_data(set2016)
-glimpse(set2016)
-```
+This is a graph that shows the average salary of the sectors throughout the years. The sectors (written on the y-axis) are the dependent variables which rely on the independent variable (written on the x-axis), the year from which the data was sampled. The \textbf{data was simplified to 11 sectors (initially having 50+ different sectors) by combining sectors that had similar governing bodies or were similar in nature}. For example, the sectors "hydro one and ontario power generation" and "ontario power generation" are very similar, so combining them and averaging out their salaries would make for a cleaner and more readable graph. The same process was used for Hospital-related jobs, the specialized Seconded jobs, other Public Sector jobs, and Municipality-related jobs. This grouping of data makes it easier to see the trends of the salaries for every sector, allowing us to gain valuable insight.
 
-```{r}
-set2015$Calendar.Year = 2015
-set2015 = filter_data(set2015)
-glimpse(set2015)
-```
+Over the years, there has been a change of the sectors with highest average salaries. Most notably, \textbf{both the University and the Ontario Power Government sectors have had average salaries that started the 25-year period near the bottom of the rankings and ended it as the top 2 highest paying sectors}. Both sectors had a significant increase in their average salaries. Furthermore, the \textbf{Hospital-related jobs had, on average, the highest paying jobs in 1996 by a large margin}. The salary of these jobs also only rose in the next few years; however, this is where it began declining. \textbf{Post 2006 and onwards, the Hospital sector began rapidly declining} and the jobs were not paying as much as they once were. By the year 2020, the average salary of jobs in the Hospital sector had fallen to close to the bottom of all sectors shown here.
 
-```{r}
-set2014 = set2014 %>% rename(Last.Name = Last.name, Job.Title = Job.title, Calendar.Year = Calendar.year) 
-set2014$Calendar.Year = 2014
-set2014 = filter_data(set2014)
-glimpse(set2014)
-```
+Looking at the graph, we can see that, on average, \textbf{universities have always paid their staff more colleges have}. Around the late 90's, we can see that the average salary of the university staff was less than the average salary of the college staff, but that did not last long. Ever since then, and as society has evolved over the past 2 decades, we have seen \textbf{rapid and consistent growth of the average salary of university workers}. In recent years, \textbf{it has also overtaken all other sectors as the highest paying sector}. \textbf{The salary for college workers has stayed relatively consistent through the years, causing it to fall well behind the average salary that universities can offer}.
 
-```{r}
-set2013$Calendar.Year = 2013
-set2013 = filter_data(set2013)
-glimpse(set2013)
-```
+We can note that there is \textbf{no consistent salary trend that is seen over the years for every sector}. Every sector has had its own trend. The \textbf{average pay for some sectors has fallen, others have had their pay increase, while lastly, there is a group of sectors which have had their pay stay consistent}, and we have spoken shown example of a sector falling in each type. As a novice, one may believe that with the rising inflation, current downfall of the Canadian currency, and the increasing cost to live, the salaries of every Public Sector job should also be increasing at some steady rate; however, we see this is not the case. These factors that should be ground for Public Sector jobs getting consistent raises to their salaries pose many threats to current Canadians, and the inconsistent overall trends that we see in the graph above do not paint a picture for a positive future. 
 
-```{r}
-set2012$Calendar.Year = 2012
-set2012 = filter_data(set2012)
-glimpse(set2012)
-```
 
-```{r}
-set2011$Calendar.Year = 2011
-set2011 = filter_data(set2011)
-glimpse(set2011)
-```
+# Hypothesis Testing
 
-```{r}
-set2010$Calendar.Year = 2010
-set2010 = filter_data(set2010)
-glimpse(set2010)
-```
+## Average salary in Colleges vs Average salaries in University from 1996 to 2020.
 
-```{r}
 
-set2009$Calendar.Year = 2009
-set2009 = filter_data(set2009)
-glimpse(set2009)
-```
+```{r,echo=FALSE}
+#Filter & standardize sector names that start or contain col
+college_uni_data = master_set %>%
+  filter(grepl("college", Sector, ignore.case = TRUE) | 
+         grepl("universit", Sector, ignore.case = TRUE)) %>%
+  mutate(Sector = case_when(
+    grepl("college", Sector, ignore.case = TRUE) ~ "colleges",
+    grepl("universit", Sector, ignore.case = TRUE) ~ "universities",
+    TRUE ~ Sector
+  ))
 
-```{r}
-set2008$Calendar.Year = 2008
-set2008 = filter_data(set2008)
-glimpse(set2008)
+#Compute average salary by sector and year
+avg_salaries = college_uni_data %>%
+  group_by(Calendar.Year, Sector) %>%
+  summarise(Avg_Salary = mean(Salary.Paid, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = Sector, values_from = Avg_Salary)
+
+#Compute difference for each year: colleges - universities and make it a new column
+avg_salaries = avg_salaries %>%
+  mutate(Diff = colleges - universities)
 
 ```
 
-```{r}
-set2007$Calendar.Year = 2007
-set2007 = filter_data(set2007)
-glimpse(set2007)
+
+```{r,echo=FALSE}
+kable(avg_salaries, caption = "Average Salaries for Colleges and Universities (1996–2020) and Their Differences(College - Universities)")
 ```
 
-```{r}
-set2006$Calendar.Year = 2006
-set2006 = filter_data(set2006)
-glimpse(set2006)
+
+We want to determine whether colleges pay more on average than universities in Ontario, when considering data from 1996 through 2020. Instead of looking at all salaries across multiple years which can be influenced by inflation or other time related factors
+we \textbf{compute the average salary for colleges and universities for each year from 1996 to 2020 and take their yearly difference}, $d_i = (\text{average college for year i})-  (\text{average university salary for year i})$
+where i indicates the current year. So we have that $d_i$ denotes the average salary difference between colleges and university for each year i we can define the following.
+
+Hypothesis:
+
+- **Null Hypothesis (\(H_0\))**: On average, there is **no difference** in salaries between college and university employees from 1996 to 2020. That is, the true mean of all yearly differences is zero:  
+  \[
+  H_0: \mu_d = 0
+  \]
+- **Alternative Hypothesis (\(H_1\))**: On average, there is a difference in salaries between college and university employees from 1996 to 2020. That is, the true mean of all yearly differences is not zero:
+  \[
+  H_1: \mu_d \neq 0
+  \]
+
+To test this hypothesis, we can use a two-sample t-test to determine whether colleges pay more on average than universities in Ontario, using the Diff column (which represents the yearly salary differences) from 1996 through 2020. We choose a significance level of $\alpha = 0.05$. The p-value is the probability of observing a result as extreme or more extreme than what we found, assuming the null hypothesis $H_0$ is true. If the p-value is less than our chosen $\alpha$, we reject the null hypothesis. We can also use confidence intervals to assess the difference. A 95% confidence interval for the mean difference tells us the range of values within which we are 95% confident the true mean difference lies. If the confidence interval includes 0, this suggests there may be no significant difference, supporting the null hypothesis. If the confidence interval does not include 0, this supports the alternative hypothesis suggesting a possible significant difference in average salaries. 
+
+```{r,echo=FALSE}
+# One-sample t-test on the difference column
+
+t_test_result <- t.test(avg_salaries$Diff,
+                        mu = 0, # null hypothesis mean
+                        alternative = "two.sided",
+                        conf.level = 0.95) # 95% confidence level
+t_test_result
+```
+The test showed a \textbf{*t*-statistic of -4.5328 with 24 degrees of freedom and a very small *p*-value of 0.0001362}. Since the *p*-value is far below our chosen significance level of 0.05, \textbf{we reject the null hypothesis}. In addition, the 95% confidence interval for the mean difference is [-21737.849, -8135.774], which does not contain zero. This further supports the that the \textbf{average salary difference over these years is significantly different from zero}. The negative sample mean of the differences \(\bar{d} = -14,936.81\) suggests that, \textbf{on average, universities paid more than colleges from 1996 to 2020}. Since the *p*-value is very small and the 95% confidence interval for the mean difference does not include zero, we find strong evidence of a real difference in average salaries between the two sectors. 
+
+# Boot Strapping
+
+We have used bootstrapping to estimate the average salary, and tax benefits from 1996 to 2020. We also calculated a 95% confidence interval. To do so we took a sample of 50 from the dataset, then replicated the a sample with repeats 100000 times. Each time we took the mean of the sample. Using this we calculated the mean and confidence interval for the data. This was performed twice, once for the salary and once for the tax benefits.
+
+```{r echo=FALSE}
+set.seed(999)
+obs.sam.sal=sample(master_set$Salary.Paid,size=50) # Observed sample
+obs.sam.tax=sample(master_set$Taxable.Benefit, size=50)
+
+boot_function=function(d){
+  boot_s = sample(d, size=50, replace=TRUE)
+  return(mean(boot_s))
+}
+
+boot_sal = replicate(100000,boot_function(obs.sam.sal)) # fake replication of samples
+boot_tax = replicate(100000,boot_function(obs.sam.tax))
+
+#95%
+conf.sal = quantile(boot_sal, c(0.025,0.975))
+conf.tax = quantile(boot_tax, c(0.025,0.975))
+
+cat("The average salary paid from 1996 to 2020:", round(mean(boot_sal), 2), "\n")
+cat("95% confidence interval for salary:", "(", conf.sal[1],"-", conf.sal[2],")", "\n\n")
+
+
+cat("The average tax benefit from 1996 to 2020:", round(mean(boot_tax), 2), "\n")
+cat("95% confidence interval for tax benefit:", "(", conf.tax[1],"-", conf.tax[2],")", "\n")
 ```
 
-```{r}
-set2005$Calendar.Year = 2005
-set2005 = filter_data(set2005)
-glimpse(set2005)
-```
+This shows that the \textbf{average salary paid from 1996 to 2020 was \$120222.30}. Since the 95% confidence interval for salary is (\$115162.4 - \$125701.5), we are 95% sure that the actual mean is within that range. Similarly, \textbf{the average tax benefit from 1996 to 2020 was $1475.20}.
 
-```{r}
-set2004$Calendar.Year = 2004
-set2004 = filter_data(set2004)
-glimpse(set2004)
-```
 
-```{r}
-set2003$Calendar.Year = 2003
-set2003 = filter_data(set2003)
-glimpse(set2003)
-```
+# Machine Learning Model
 
-```{r}
-set2002$Calendar.Year = 2002
-set2002 = filter_data(set2002)
-glimpse(set2002)
-```
+We wanted to create 2 models, one to predict the average salary over years, and predict tax benefits over years. We will be treating the years as a continuous independent variable, which means the tax benefit and the salary will be the dependent variables for their respective models. 
 
-```{r}
-set2001$Calendar.Year = 2001
-set2001 = set2001 %>% rename(Last.Name = Surname, Job.Title = Position)
-set2001 = filter_data(set2001)
-glimpse(set2001)
-```
+## Model Graphs
+```{r, echo=FALSE}
+# Fit a quadratic (2nd-degree) polynomial regression model
+model <- lm(Avg_Salary ~ poly(Calendar.Year, 3), data=avg_table)
 
-```{r}
-set2000$Calendar.Year = 2000
-set2000 = filter_data(set2000)
-glimpse(set2000)
-```
+# Add predicted values to the table
+avg_table$predicted_salary <- predict(model, newdata=avg_table)
 
-```{r}
-set1999$Calendar.Year = 1999
-set1999 = filter_data(set1999)
-set1999 = set1999 %>%
-  mutate(Calendar.Year = as.double(Calendar.Year))
-glimpse(set1999)
-```
+# Plot the results
+model1 = ggplot(avg_table, aes(x=Calendar.Year, y=Avg_Salary)) +
+  geom_point(color="blue") +  # Scatter plot of actual salary data
+  geom_line(aes(y=predicted_salary), color="red", size=1) +  # Regression line
+  ggtitle("Polynomial Regression: Salary") +
+  xlab("Year") + ylab("Average Salary ($)") +
+  theme_minimal()
 
-```{r}
-set1998$Calendar.Year = 1998
-set1998 = filter_data(set1998)
-glimpse(set1998)
-```
+# Fit a quadratic (2nd-degree) polynomial regression model
+model_tax <- lm(Avg_Tax_Benefits ~ Calendar.Year, data=avg_table)
 
-```{r}
-set1997$Calendar.Year = 1997
-set1997 = filter_data(set1997)
-glimpse(set1997)
-```
+# Add predicted values to the table
+avg_table$predicted_tax <- predict(model_tax, newdata=avg_table)
 
-```{r}
-set1996$Calendar.Year = 1996
-set1996 = filter_data(set1996)
-glimpse(set1996)
-```
+# Plot the results
+model2 = ggplot(avg_table, aes(x=Calendar.Year, y=Avg_Tax_Benefits)) +
+  geom_point(color="blue") +  # Scatter plot of actual salary data
+  geom_line(aes(y=predicted_tax), color="red", size=1) +  # Regression line
+  ggtitle("Linear Regression: Tax Benefit") +
+  xlab("Year") + ylab("Average Tax Benefits ($)") +
+  theme_minimal()
 
-```{r}
-dataSet = bind_rows(set2020, set2019, set2018, set2017, set2016, set2015, set2014, set2013, set2012, set2011, set2010, set2009, set2008, set2007, set2006, set2005, set2004, set2003, set2002, set2001, set2000, set1999, set1998, set1997, set1996)
-dataSet %>% group_by(Sector, Calendar.Year) %>% summarize(Avg.Salary = mean(Salary.Paid, na.rm = TRUE), Avg.Tax.Benefits = mean(Taxable.Benefits, na.rm = TRUE))
+grid.arrange(model1, model2, ncol = 2)
+
+summary(model)
+```
+## Model Summaries
+We have made a non-linear model with degree 3 to predict the salary. \textbf{Since the Multiple R squared value is 0.85, this means that the model explains 85% of the variance in the data}. \textbf{Since all p-values for the coefficients are very small, they are all significant so all coefficients are needed}.
+
+```{r, echo=FALSE}
+
+summary(model_tax)
+
+```
+We have made a linear model to predict the tax benefits. \textbf{Since the Multiple R squared value is 0.499, this means that the model explains 50%% of the variance in the data}. \textbf{Since the p-values for the coefficients are really small thay are all significant. This means that all of the coefficients are needed}. 
+
+## Interpretation of Regression Parameters
+For the \textbf{first regression model}, we have the coefficients:
+
+- The \textbf{intercept coefficient, 127082.2}, which tells us that if all independent variables are equal to 0, the \textbf{expected value for salary should be approximately 127082.2}.
+
+- The coefficient for the \textbf{linear term is 4178.0}. This means, if we let the cubic and quadratic terms be constant, \textbf{the salary should increase by \$4178.00 each year}.
+
+- The \textbf{second degree coefficient is -8285.4}. This means that we have \textbf{a much larger dip in the equation, so the local minimum is much smaller}.
+
+- The \textbf{third degree coefficient is 4771.1}. This means there our model is generally \textbf{concave up}.
+
+
+For the \textbf{second regression model}, we have the coefficients:
+
+- The \textbf{intercept coefficient, 95161.75}, which tells is that if all independent variables are zero, the \textbf{expected value for the tax benefits is approximately \$95161.75}.
+
+- The \textbf{coefficient for the linear term is -46.805}. This means the tax benefit should \textbf{decrease by $46.805}, every year.
+
+
+# Cross Validation
+We used 5 fold cross validation for our models to train and test them. To do so we split the data into 5 parts, and the model was trained and tested 5 times. Each time a different group of data was used to test, and the other data was used to train. We then \textbf{used the root mean squared error (RMSE) method} to determine the accuracy of the model. Each time the RMSE was calculated and stored, which was finally averages to find the real accuracy of the models.
+
+```{r, echo=FALSE}
+# using 5 fold validation
+k=5
+
+# preparing k samples
+avg_table_cv <- avg_table %>% select(Calendar.Year, Avg_Salary, Avg_Tax_Benefits)
+avg_table_k = avg_table_cv %>% mutate(idx = sample(c(1:k), size=nrow(avg_table_cv), replace = TRUE))
+
+avg_table_k = avg_table %>% mutate(idx = sample(c(1:k), size=nrow(avg_table), replace = T))
+
+sal_index = vector()
+tax_index = vector()
+
+# Training and testing on each of the samples
+for (i in 1:k){
+  # Preparing train and test data
+  data_train = avg_table_k %>% filter(idx != i)
+  data_test = avg_table_k %>% filter(idx == i)
+  
+  # validating salary model 
+  sal_trained_model = lm(Avg_Salary ~ poly(Calendar.Year, 3), data=data_train)
+  sal_test_result = predict(sal_trained_model, newdata=data_test)
+  sal_mse <- mean((sal_test_result - data_test$Avg_Salary)^2)
+  sal_index[i]=sqrt(sal_mse)
+  
+  # validating tax model
+  tax_trained_model = lm(Avg_Tax_Benefits ~ poly(Calendar.Year, 3), data=data_train)
+  tax_test_result = predict(tax_trained_model, newdata=data_test)
+  tax_mse <- mean((tax_test_result - data_test$Avg_Tax_Benefits)^2)
+  tax_index[i]=sqrt(tax_mse)
+}
+
+# Output final RMSE 
+cat("The salary prediction model was on average off by $", round(mean(sal_index), 2), "\n")
+cat("The tax prediction model was on average off by $", round(mean(tax_index), 2))
+```
+Considering that the salaries and tax benefits are \textbf{quite large numbers}, having our model be off by such small values relatively \textbf{shows that our model is fairly accurate}.
+
+# Final Summary
+
+Based on our findings in this report, \textbf{we can conclude the following}:
+
+- On average, the sectors with the largest paying salaries have been the Hospital, University, and Ontario Power Government sectors. In the beginning of the time frame (closer to 1996), the Hospital sector topped the charts for average salary by a large margin, but as the years progressed, it has fallen quite drastically. Concurrently, the University and Ontario Power Government sectors have risen to the top. The other sectors have remained quite similar over the 25 years.
+
+- Universities have, on average, paid their workers more than colleges have.
+
+- There is no common trend amongst the sectors. Generally, the salary for each sector rises, falls, or stays consistent independently of the other sectors.
+
+- The average taxable benefits of Public Sector workers have decreased over the years, while their average salaries have not increased enough to make up the difference. This trend looks likely to continue into future years, which can cause massive impacts on the workers.
+
+- The salary prediction model was very accurate, with the expected values being  approximately \$1000 off of their respective real values. Similarly, the tax benefit model's expected values only deviated from the real values by approximately \$300. These deviations may seem large and inaccurate at first, but since we are working with very large salaries, these deviations are very minuscule. Thus, we can predict future salaries and taxable benefits in the Public Government Sector fields with high precision. 
+
+Overall, we gained insight on \textbf{average salaries and taxable benefits per sector per year}. We also learned about any \textbf{trends respective to the sectors}, ensuring we can \textbf{predict future values for salaries and taxable benefits}. 
+
+
+# Appendix
+
+```{r, eval=FALSE}
+#1. Introduction: No code for this Part
+
+#2.1 Merging and Cleaning Public Sector Salary Data (1996–2020) loading libraries
+#Loading Ontario's Public Sector Salary Disclosure data for all the years
+library(tidyverse)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(gridExtra)
+
+set2020 =  read.csv("en-2020-pssd-compendium.csv")
+set2019 =  read.csv("en-2019-pssd-compendium (1).csv")
+set2018 =  read.csv("en-2018-pssd-compendium.csv")
+set2017 =  read.csv("en-2017-pssd-compendium.csv")
+set2016 =  read.csv("en-2016-pssd-compendium.csv")
+set2015 =  read.csv("en-2015-pssd-compendium-with-addendum (1).csv")
+set2014 =  read.csv("en-2014-pssd-full-compendium.csv")
+set2013 =  read.csv("en-2013-pssd.csv")
+set2012 =  read.csv("en-2012-pssd.csv")
+set2011 =  read.csv("en-2011-pssd.csv")
+set2010 =  read.csv("en-2010-pssd.csv")
+set2009 =  read.csv("en-2009-pssd.csv")
+set2008 =  read.csv("en-2008-pssd.csv")
+set2007 =  read.csv("en-2007-pssd.csv")
+set2006 =  read.csv("en-2006-pssd.csv")
+set2005 =  read.csv("en-2005-pssd.csv")
+set2004 =  read.csv("en-2004-pssd.csv")
+set2003 =  read.csv("en-2003-pssd.csv")
+set2002 =  read.csv("en-2002-pssd.csv")
+set2001 =  read.csv("2001.csv")
+set2000 =  read.csv("en-2000-pssd.csv")
+set1999 =  read.csv("1999.csv")
+set1998 =  read.csv("en-1998-pssd.csv")
+set1997 =  read.csv("en-1997-pssd.csv")
+set1996 =  read.csv("en-1996-pssd.csv")
+
+#2.2 This function standardizes and filters salary dataset columns for consistency and analysis
+filter_data <- function(dataset) {
+  if (is.character(dataset$Salary.Paid)) {
+    # Removes commas and $ from string
+    dataset$Salary.Paid <- as.numeric(gsub("[$,]", "", dataset$Salary.Paid))
+  }
+  if (is.character(dataset$Taxable.Benefits)) {
+    dataset$Taxable.Benefits <- as.numeric(gsub("[$,]", "", dataset$Taxable.Benefits))
+  }
+  dataset$Sector <- tolower(dataset$Sector) # To ensure for consistent Sector names
+  # Replace all instances of one substring with the other
+  # to ensure consistent grouping later on
+  dataset$Sector <- gsub("[&]", "and", dataset$Sector)
+  dataset$Sector <- gsub("[:]", "-", dataset$Sector)
+  dataset$Sector <- gsub(" - universités", "", dataset$Sector)
+  dataset$Sector <- gsub("[*]", "", dataset$Sector)
+  dataset$Sector <- gsub("[\u2010-\u2015]", "-", dataset$Sector) # Standardize all dashes
+  dataset$Sector <- enc2utf8(dataset$Sector) # Use UTF-8 Formatting
+  dataset$Sector <- str_trim(dataset$Sector) # Remove trailing and leading white space
+  return(dataset %>% select(Sector, Last.Name, First.Name, Salary.Paid, 
+                            Taxable.Benefits, Employer, Job.Title, Calendar.Year))
+}
+
+#2.3 For each year we changed column names and cleaned the data by removing formatting from
+# numeric values, standardizing sector names, and selecting only the relevant columns: 
+# We define the final columns names to be Sector, Last.Name, First.Name, Salary.Paid, 
+# Taxable.Benefits, Employer, Job.Title, and Calendar.Year.
+set2020 <- set2020 %>% rename(Last.Name = Last.name,First.Name = First.name,
+                              Salary.Paid = Salary, Taxable.Benefits = Benefits,
+                              Job.Title = Job.title, Calendar.Year = Year)
+
+set2014 <- set2014 %>% rename(Last.Name = Last.name,Job.Title = Job.title, 
+                              Calendar.Year = Calendar.year)
+set2001 <- set2001 %>% rename(Last.Name = Surname, Job.Title = Position)
+
+# Need to do this so ensure Calendar.Year is numeric and binding works
+set1999$Calendar.Year <- as.double(set1999$Calendar.Year)
+# Placing all datasets into a named list with year as the name
+data_list <- list(
+  "2020" = set2020,"2019" = set2019,"2018" = set2018, "2017" = set2017,
+  "2016" = set2016,"2015" = set2015,"2014" = set2014,"2013" = set2013,
+  "2012" = set2012,"2011" = set2011,"2010" = set2010,
+  "2009" = set2009,"2008" = set2008,"2007" = set2007,"2006" = set2006,
+  "2005" = set2005, "2004" = set2004, "2003" = set2003, "2002" = set2002,
+  "2001" = set2001,"2000" = set2000,"1999" = set1999,"1998" = set1998,
+  "1997" = set1997,"1996" = set1996
+)
+
+# Iterate each years data set and clean it 
+for (year_str in names(data_list)) {
+  # Convert list name to numeric year (e.g. "2019" -> 2019)
+  numeric_year <- as.numeric(year_str)
+  # Extract the data frame
+  curr_data <- data_list[[year_str]]
+  # Assign correct Calendar.Year as some are missing
+  curr_data$Calendar.Year <- numeric_year
+  # Apply filter_data() function to df
+  curr_data <- filter_data(df)
+  # Store cleaned and filtered df back into list
+  data_list[[year_str]] <- curr_data
+}
+
+# Directly bind everything in the list
+master_set <- bind_rows(data_list)
+# master_set now contains all rows from 1996 to 2020
+
+#3. Description of the Dataset
+names(set2020)
+names(set2019)
+
+#4. Background of the Data: No Code in this Part
+
+#5. What is the overall Research Question: No code for this Part
+
+#6. Tables and Graphs
+#6.1 Average Salary and Taxable Benefits by Year (1996-2020)
+# Group by Calendar.Year and compute the averages
+avg_table = master_set %>%
+  group_by(Calendar.Year) %>%
+  summarize(
+    Avg_Salary = mean(Salary.Paid, na.rm = TRUE),
+    Avg_Tax_Benefits = mean(Taxable.Benefits, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(Calendar.Year)
+
+# Print the table
+kable(avg_table, 
+      caption = "Summary of Average Salary and Taxable Benefits by Year (1996-2020)", 
+      digits = 2)
+
+# Create Average Salary plot
+plot1 <- ggplot(avg_table, aes(x = Calendar.Year, y = Avg_Salary)) +
+  geom_line(color = "blue", linewidth = 1.2) + 
+  geom_point(color = "blue", size = 2) +
+  labs(
+    title = "Trend in Average Salary (1996-2020)",
+    x = "Year",
+    y = "Average Salary ($)"
+  ) +
+  theme_minimal()
+
+# Create the Average Taxable Benefits plot
+plot2 <- ggplot(avg_table, aes(x = Calendar.Year, y = Avg_Tax_Benefits)) +
+  geom_line(color = "red", linewidth = 1.2) + 
+  geom_point(color = "red", size = 2) +
+  labs(
+    title = "Trend in Average Taxable Benefits (1996-2020)",
+    x = "Year",
+    y = "Average Taxable Benefits ($)"
+  ) +
+  theme_minimal()
+
+# Arrange the two plots side by side
+grid.arrange(plot1, plot2, ncol = 2)
+
+#6.2 Sectors with the Largest Average Salary by Year
+# Grouping data by Sector and Year then calculating average salary per group and sort in 
+# ascending order
+master_set2 = master_set %>% group_by(Sector, Calendar.Year) %>% 
+  summarize(Avg.Salary = mean(Salary.Paid, na.rm = TRUE)) %>%
+  group_by(Calendar.Year) %>% filter(Avg.Salary == max(Avg.Salary, na.rm = TRUE)) %>% 
+  arrange(Calendar.Year)
+
+# Displaying final table
+kable(master_set2, 
+      caption = "Sector with the Largest Average Salary by Year (1996-2020)", 
+      booktabs = TRUE, 
+      digits = 2)
+
+#6.3 Salary trends by sector over the years
+# Copy master_set
+per_sector_set = master_set
+
+# Rename sectors to ensure correct grouping
+per_sector_set$Sector <- per_sector_set$Sector %>%
+  str_to_lower() %>%
+  str_trim() %>%
+  str_replace("^government of ontario.*", "government of ontario") %>%
+  str_replace("^ministry.*", "ministry") %>%
+  str_replace("^municipalities.*", "municipalities") %>%
+  str_replace("^seconded.*", "seconded") %>%
+  str_replace("^hospitals.*", "hospitals") %>%
+  str_replace("hydro one and ontario power generation", "ontario power generation") %>%
+  str_replace("other public sector employers", "other public sector")
+
+# Group by Sector and Calendar.Year and take average of Salary.Paid
+per_sector_set <- per_sector_set %>%
+  group_by(Sector, Calendar.Year) %>%
+  summarise(Avg_Salary = mean(Salary.Paid, na.rm = TRUE))
+
+# Plot graph
+ggplot(per_sector_set, aes(x = Calendar.Year, y = Avg_Salary, color = Sector)) +
+  geom_line(size = 0.8, alpha = 0.9) +
+  xlab("Year") + ylab("Average Salary") + 
+  ggtitle("Average Salary Trend by Sector (1996-2020)") + labs(
+    color = "Sector") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom") +
+  guides(color = guide_legend(ncol = 3))
+
+#7. Hypothesis Testing
+# Filter & standardize sector names that start or contain college and universit
+college_uni_data = master_set %>%
+  filter(grepl("college", Sector, ignore.case = TRUE) | 
+         grepl("universit", Sector, ignore.case = TRUE)) %>%
+  mutate(Sector = case_when(
+    grepl("college", Sector, ignore.case = TRUE) ~ "colleges",
+    grepl("universit", Sector, ignore.case = TRUE) ~ "universities",
+    TRUE ~ Sector))
+
+# Compute average salary by sector and year
+avg_salaries = college_uni_data %>%
+  group_by(Calendar.Year, Sector) %>%
+  summarise(Avg_Salary = mean(Salary.Paid, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = Sector, values_from = Avg_Salary)
+
+# Compute difference for each year: colleges - universities and make it a new column
+avg_salaries = avg_salaries %>%
+  mutate(Diff = colleges - universities)
+
+#7.1 Average Salaries for Colleges and Universities (1996–2020) and 
+# their Differences(College - Universities)
+kable(avg_salaries, caption = "Average Salaries for Colleges and Universities (1996–2020) and 
+      their Differences(College - Universities)")
+
+#8. Boot Strapping
+set.seed(999)
+obs.sam.sal=sample(master_set$Salary.Paid,size=50) # Observed sample
+obs.sam.tax=sample(master_set$Taxable.Benefit, size=50)
+
+boot_function=function(d){
+  boot_s = sample(d, size=50, replace=TRUE)
+  return(mean(boot_s))
+}
+boot_sal = replicate(100000,boot_function(obs.sam.sal)) # Fake replication of samples
+boot_tax = replicate(100000,boot_function(obs.sam.tax))
+#95%
+conf.sal = quantile(boot_sal, c(0.025,0.975))
+conf.tax = quantile(boot_tax, c(0.025,0.975))
+
+cat("The average salary paid from 1996 to 2020:", mean(boot_sal), "\n")
+cat("95% confidence interval for salary:", "(", conf.sal[1],"-", conf.sal[2],")", "\n\n")
+cat("The average tax benefit from 1996 to 2020:", mean(boot_tax), "\n")
+cat("95% confidence interval for tax benefit:", "(", conf.tax[1],"-", conf.tax[2],")", "\n")
+
+#9. Machine Learning Model
+
+##9.1 Model Graphs
+# Fit a quadratic (2nd-degree) polynomial regression model
+model <- lm(Avg_Salary ~ poly(Calendar.Year, 3), data=avg_table)
+
+# Add predicted values to the table
+avg_table$predicted_salary <- predict(model, newdata=avg_table)
+
+# Plot the results
+model1 = ggplot(avg_table, aes(x=Calendar.Year, y=Avg_Salary)) +
+  geom_point(color="blue") +  # Scatter plot of actual salary data
+  geom_line(aes(y=predicted_salary), color="red", size=1) +  # Regression line
+  ggtitle("Polynomial Regression: Salary Trend") +
+  xlab("Year") + ylab("Average Salary ($)") +
+  theme_minimal()
+
+# Fit a quadratic (2nd-degree) polynomial regression model
+model_tax <- lm(Avg_Tax_Benefits ~ Calendar.Year, data=avg_table)
+
+# Add predicted values to the table
+avg_table$predicted_tax <- predict(model_tax, newdata=avg_table)
+
+# Plot the results
+model2 = ggplot(avg_table, aes(x=Calendar.Year, y=Avg_Tax_Benefits)) +
+  geom_point(color="blue") +  # Scatter plot of actual salary data
+  geom_line(aes(y=predicted_tax), color="red", size=1) +  # Regression line
+  ggtitle("Polynomial Regression: Salary Trend") +
+  xlab("Year") + ylab("Average Salary ($)") +
+  theme_minimal()
+
+grid.arrange(model1, model2, ncol = 2)
+
+summary(model)
+
+##9.2 Model Summaries
+summary(model_tax)
+
+##9.3 Interpretation of Regression Parameters: No code for this Part
+
+#10. Cross Validation:
+# Using 5 fold validation
+k=5
+
+# Preparing k samples
+avg_table_cv <- avg_table %>% select(Calendar.Year, Avg_Salary, Avg_Tax_Benefits)
+avg_table_k = avg_table_cv %>% mutate(idx = sample(c(1:k), size=nrow(avg_table_cv), replace = TRUE))
+
+avg_table_k = avg_table %>% mutate(idx = sample(c(1:k), size=nrow(avg_table), replace = T))
+
+sal_index = vector()
+tax_index = vector()
+
+# Training and testing on each of the samples
+for (i in 1:k){
+  # Preparing train and test data
+  data_train = avg_table_k %>% filter(idx != i)
+  data_test = avg_table_k %>% filter(idx == i)
+  
+  # Validating salary model 
+  sal_trained_model = lm(Avg_Salary ~ poly(Calendar.Year, 3), data=data_train)
+  sal_test_result = predict(sal_trained_model, newdata=data_test)
+  sal_mse <- mean((sal_test_result - data_test$Avg_Salary)^2)
+  sal_index[i]=sqrt(sal_mse)
+  
+  # Validating tax model
+  tax_trained_model = lm(Avg_Tax_Benefits ~ poly(Calendar.Year, 3), data=data_train)
+  tax_test_result = predict(tax_trained_model, newdata=data_test)
+  tax_mse <- mean((tax_test_result - data_test$Avg_Tax_Benefits)^2)
+  tax_index[i]=sqrt(tax_mse)
+}
+
+# Output final RMSE 
+cat("The salary prediction model was on average off by $",mean(sal_index), "\n")
+cat("The tax prediction model was on average off by $", mean(tax_index))
+
+#11. Final Summary: No code for this Part
+
+#12. Summary: Everything in this section!
 ```
